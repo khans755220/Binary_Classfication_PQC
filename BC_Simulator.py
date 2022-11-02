@@ -54,6 +54,8 @@ def square_loss(labels, predictions):
 
     loss = loss / len(labels)
     accuracy = accuracy / len(labels)
+
+    training_acc.append(accuracy)
     
     print(accuracy)
     
@@ -98,11 +100,15 @@ var_init = 0.05 * np.random.randn(num_layers, 14, requires_grad=True)
 opt = AdamOptimizer(0.01, beta1=0.9, beta2=0.999)
 var = var_init
 
+training_acc = []
+training_cost = []
+
 #training model and optimizing results
-for it in range(150):
+for it in range(20):
     (var, _, _), _cost = opt.step_and_cost(cost, var, tupleList, Z)
     print("Iter: {:5d} | Cost: {:0.7f} ".format(it, _cost))
-
+    training_cost.append(_cost)
+    print(training_acc)
 
 vals = [(i, j) for i in np.linspace(-1, 1, 50) for j in np.linspace(-1,1,50)]
 
@@ -124,8 +130,8 @@ predictions = [quantum_neural_net(var, x_) for x_ in vals]
 
 
 
-class_A = [0.5, 0.5]
-class_B = [-0.5, -0.5]
+class_A = [-0.5, 0.5]
+class_B = [0.5, -0.5]
 
 preds_accuracy = 0
 
@@ -155,5 +161,17 @@ plt.tick_params(axis="both", which="major")
 plt.tick_params(axis="both", which="minor")
 plt.show()
 
+plt.plot(np.linspace(1, 20, 20), training_acc)
+plt.title("Accuracy of Training")
+plt.xlabel("steps")
+plt.ylabel("Accuracy")
+plt.xticks(np.arange(1, 20, step=5))
+plt.show()
 
 
+plt.plot(np.linspace(1, 20, 20), training_cost)
+plt.title("Cost of Training")
+plt.xlabel("steps")
+plt.ylabel("Squareloss")
+plt.xticks(np.arange(1, 20, step=5))
+plt.show()
